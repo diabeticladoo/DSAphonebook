@@ -255,9 +255,58 @@ int main()
 		cout << t.getemail() << " " << t.getprofession() << endl;
 	}
 	cout << "end\n\n";
-
+	fclose(stdin);
 	displayContacts("a");
-	
+	int choice;
+	cout<<"Welcome to ASA Phone Directory\n";
+	cout<<"Please select a suitable option:\n";
+	cout<<"1. Search by name\n";
+	cout<<"2. Search by number\n";
+	cout<<"3. Add to contact\n";
+	cout<<"4. Edit Contact\n";
+	cout<<"5. Add to favourite\n";
+	cout<<"6. Delete a contact\n";
+	cout<<"7. Add to contact\n";
+	cout<<"8. Exit\n";
+	while(true){
+		cin>>choice;
+		switch(choice){
+			case 1:{
+
+				break;
+			}
+			case 2:{
+
+				break;
+			}
+			case 3:{
+
+				break;
+			}
+			case 4:{
+
+				break;
+			}
+			case 5:{
+
+				break;
+			}
+			case 6:{
+
+				break;
+			}
+			case 7:{
+
+				break;
+			}
+			case 8:{
+				cout<<"Exiting\n";
+				exit(0);
+				break;
+			}
+		}
+	}
+
 	// Insert all the Contacts into Trie
 	// insertIntoTrie(contacts, n);
 
