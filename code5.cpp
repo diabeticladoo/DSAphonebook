@@ -266,8 +266,7 @@ int main()
 	cout<<"4. Edit Contact\n";
 	cout<<"5. Add to favourite\n";
 	cout<<"6. Delete a contact\n";
-	cout<<"7. Add to contact\n";
-	cout<<"8. Exit\n";
+	cout<<"7. Exit\n";
 	while(true){
 		cin>>choice;
 		switch(choice){
