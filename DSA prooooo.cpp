@@ -4,42 +4,42 @@ using namespace std;
 class contactinfo
 {
 private:
-  string name;
-  string number;
-  string email;
-  string profession;
+    string name;
+    string number;
+    string email;
+    string profession;
 
 public:
-  contactinfo(string a, string b, string c = "", string d = "")
-  {
-    name = a;
-    number = b;
-    email = c;
-    profession = d;
-  }
-  contactinfo()
-  {
-  }
+    contactinfo(string a, string b, string c = "none", string d = "none")
+    {
+        name = a;
+        number = b;
+        email = c;
+        profession = d;
+    }
+    contactinfo()
+    {
+    }
 
-  string getname()
-  {
-    return name;
-  }
+    string getname()
+    {
+        return name;
+    }
 
-  string getnum()
-  {
-    return number;
-  }
+    string getnum()
+    {
+        return number;
+    }
 
-  string getemail()
-  {
-    return email;
-  }
+    string getemail()
+    {
+        return email;
+    }
 
-  string getprofession()
-  {
-    return profession;
-  }
+    string getprofession()
+    {
+        return profession;
+    }
 };
 
 // WORK TO DO
@@ -48,40 +48,38 @@ public:
 
 struct Triename
 {
-  unordered_map<char, Triename *> child;
+    unordered_map<char, Triename *> child;
+    bool isLast;
+    int pos;
 
-  bool isLast;
-  int pos;
+    Triename()
+    {
+        for (char i = 'a'; i <= 'z'; i++)
+            child[i] = NULL;
 
-  Triename()
-  {
+        for (char i = '0'; i <= '9'; i++)
+            child[i] = NULL;
 
-    for (char i = 'a'; i <= 'z'; i++)
-      child[i] = NULL;
-	
-	for (char i = '0'; i <= '9'; i++)
-      child[i] = NULL;
-	
 
-    child[' '] = NULL;
+        child[' '] = NULL;
 
-    isLast = false;
-  }
+        isLast = false;
+    }
 };
 
 struct Trienumber
 {
-  unordered_map<char, Trienumber *> child;
+    unordered_map<char, Trienumber *> child;
 
-  bool isLast;
-  int pos;
-  Trienumber()
-  {
-    for (char i = '0'; i <= '9'; i++)
-      child[i] = NULL;
+    bool isLast;
+    int pos;
+    Trienumber()
+    {
+        for (char i = '0'; i <= '9'; i++)
+            child[i] = NULL;
 
-    isLast = false;
-  }
+        isLast = false;
+    }
 };
 
 Triename *rootname = new Triename();
@@ -89,196 +87,196 @@ Trienumber *rootnum = new Trienumber();
 
 void insertname(string s, int j)
 {
-  int len = s.length();
+    int len = s.length();
+    Triename *itr = rootname;
 
-  Triename *itr = rootname;
-
-  for (int i = 0; i < len; i++)
-  {
-    Triename *nextNode = itr->child[s[i]];
-    if (nextNode == NULL)
+    for (int i = 0; i < len; i++)
     {
-      nextNode = new Triename();
+        Triename *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
+            nextNode = new Triename();
 
-      itr->child[s[i]] = nextNode;
+            itr->child[s[i]] = nextNode;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            itr->isLast = true;
+            itr->pos = j;
+        }
     }
-
-    itr = nextNode;
-
-    if (i == len - 1)
-    {
-      itr->isLast = true;
-      itr->pos = j;
-    }
-  }
 }
 
 void insertnum(string s, int j)
 {
-  int len = s.length();
-  Trienumber *itr = rootnum;
+    int len = s.length();
+    Trienumber *itr = rootnum;
 
-  for (int i = 0; i < len; i++)
-  {
-    Trienumber *nextNode = itr->child[s[i]];
-    if (nextNode == NULL)
+    for (int i = 0; i < len; i++)
     {
+        Trienumber *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
 
-      nextNode = new Trienumber();
+            nextNode = new Trienumber();
 
-      itr->child[s[i]] = nextNode;
+            itr->child[s[i]] = nextNode;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            itr->isLast = true;
+            itr->pos = j;
+        }
     }
-
-    itr = nextNode;
-
-    if (i == len - 1)
-    {
-      itr->isLast = true;
-      itr->pos = j;
-    }
-  }
 }
 
-void displayContactsUtil(Triename *curNode, string prefix)
+void displayContactsUtil(Triename *curNode, string prefix,vector<int> *p)
 {
 
-  if (curNode->isLast)
-  {
-    cout << curNode->pos << " " << prefix << endl;
-  }
+    if (curNode->isLast)
+    {
+        p->push_back(curNode->pos);
+        cout << p->size() << " " << prefix << endl;
+    }
 
-  for (char i = 'a'; i <= 'z'; i++)
-  {
-    Triename *nextNode = curNode->child[i];
+    for (char i = 'a'; i <= 'z'; i++)
+    {
+        Triename *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+        displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    for (char i = '0'; i <= '9'; i++)
+    {
+        Triename *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+        displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    Triename *nextNode = curNode->child[' '];
+
     if (nextNode != NULL)
-      displayContactsUtil(nextNode, prefix + (char)i);
-  }
-  for (char i = '0'; i <= '9'; i++)
-  {
-    Triename *nextNode = curNode->child[i];
-    if (nextNode != NULL)
-      displayContactsUtil(nextNode, prefix + (char)i);
-  }
-  Triename *nextNode = curNode->child[' '];
-
-  if (nextNode != NULL)
-  {
-    displayContactsUtil(nextNode, prefix + ' ');
-  }
+    {
+        displayContactsUtil(nextNode, prefix + ' ',p);
+    }
 
 
 }
 
-void displayContactsUtil(Trienumber *curNode, string prefix)
+void displayContactsUtil(Trienumber *curNode, string prefix,vector<int> *p)
 {
 
-  if (curNode->isLast)
-  {
-    cout << curNode->pos << " " << prefix << endl;
-  }
+    if (curNode->isLast)
+    {
+        p->push_back(curNode->pos);
+        cout << p->size() << " " << prefix << endl;
+    }
 
-  for (char i = '0'; i <= '9'; i++)
-  {
-    Trienumber *nextNode = curNode->child[i];
-    if (nextNode != NULL)
-      displayContactsUtil(nextNode, prefix + (char)i);
-  }
-  Trienumber *nextNode = curNode->child[' '];
-  if (nextNode != NULL)
-  {
-    displayContactsUtil(nextNode, prefix + ' ');
-  }
+    for (char i = '0'; i <= '9'; i++)
+    {
+        Trienumber *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+            displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    
 }
 
-void displayContactsbyname(string str)
+bool displayContactsbyname(string str,vector<int> *p)
 {
-  Triename *prevNode = rootname;
+    Triename *prevNode = rootname;
 
-  string prefix = "";
-  int len = str.length();
+    string prefix = "";
+    int len = str.length();
 
-  int i;
-  for (i = 0; i < len; i++)
-  {
-
-    prefix += (char)str[i];
-
-    char lastChar = prefix[i];
-
-    Triename *curNode = prevNode->child[lastChar];
-
-    if (curNode == NULL)
+    int i;
+    for (i = 0; i < len; i++)
     {
-      cout << "\nNo Results Found for " << prefix
-           << "\n";
-      i++;
-      break;
+        prefix += (char)str[i];
+
+        char lastChar = prefix[i];
+
+        Triename *curNode = prevNode->child[lastChar];
+
+        if (curNode == NULL)
+        {
+            cout << "\nNo Results Found for " << str
+                << "\n";
+            i++;
+            return 0;
+        }
+
+        if (i == len - 1)
+        {
+            cout << "\nSuggestions based on \"" << prefix
+                << "\" are \n";
+
+            displayContactsUtil(curNode, prefix,p);
+            return 1;
+        }
+        prevNode = curNode;
     }
+    return 0;
 
-    if (i == len - 1)
-    {
-      cout << "\nSuggestions based on \"" << prefix
-           << "\" are \n";
-
-      displayContactsUtil(curNode, prefix);
-    }
-    prevNode = curNode;
-  }
-
-  for (; i < len; i++)
-  {
-    prefix += (char)str[i];
-    cout << "\nNo Results Found for \"" << prefix
-         << "\" \n";
-  }
+        
+ 
 }
 
-void displayContactsbynum(string str)
+bool displayContactsbynum(string str,vector<int> *p)
 {
-  Trienumber *prevNode = rootnum;
+    Trienumber *prevNode = rootnum;
 
-  string prefix = "";
-  int len = str.length();
+    string prefix = "";
+    int len = str.length();
 
-  int i;
-  for (i = 0; i < len; i++)
-  {
-
-    prefix += (char)str[i];
-
-    char lastChar = prefix[i];
-
-    Trienumber *curNode = prevNode->child[lastChar];
-
-    if (curNode == NULL)
+    int i;
+    for (i = 0; i < len; i++)
     {
-      cout << "\nNo Results Found for " << prefix
-           << "\n";
-      i++;
-      break;
+        prefix += (char)str[i];
+
+        char lastChar = prefix[i];
+
+        Trienumber *curNode = prevNode->child[lastChar];
+
+        if (curNode == NULL)
+        {
+            cout << "\nNo Results Found for " << str
+                << "\n";
+            i++;
+            return 0;
+        }
+
+        if (i == len - 1)
+        {
+            cout << "\nSuggestions based on \"" << prefix
+                << "\" are \n";
+
+            displayContactsUtil(curNode, prefix,p);
+            return 1;
+        }
+
+        prevNode = curNode;
     }
-
-    if (i == len - 1)
-    {
-      cout << "\nSuggestions based on \"" << prefix
-           << "\" are \n";
-
-      displayContactsUtil(curNode, prefix);
-    }
-
-    prevNode = curNode;
-  }
-
-  for (; i < len; i++)
-  {
-    prefix += (char)str[i];
-    cout << "\nNo Results Found for \"" << prefix
-         << "\" \n";
-  }
+    return 1;
+  
 }
 
-
-
+void displaycontact(contactinfo p)
+{
+    cout << "Name: " << p.getname() << endl;
+    cout << "Phone Number: " << p.getnum() << endl;
+    cout << "Email: " << p.getemail() << endl;
+    cout << "Profession: " << p.getprofession() << endl;
+   
+    string s;
+    do {
+     cout << "\n\nPress ENTER to exit" << endl;
+     getline(cin, s);
+    } while (s.length() != 0);
+}
 
 int main()
 {
@@ -321,33 +319,64 @@ int main()
 	}
 
 
-	displayContactsbyname("an");
-	displayContactsbynum("11");
+	// displayContactsbyname("an");
+	// displayContactsbynum("11");
 
 	int choice;
 	cout << "Welcome to ASA Phone Directory\n";
 	cout << "Please select a suitable option:\n";
-	cout << "1. Search by name\n";
-	cout << "2. Search by number\n";
+	cout << "1. Search by name\n";          //done
+	cout << "2. Search by number\n";        //done
 	cout << "3. Add to contact\n";
 	cout << "4. Edit Contact\n";
 	cout << "5. Add to favourite\n";
 	cout << "6. Delete a contact\n";
 	cout << "7. Add to contact\n";
-	cout << "8. Exit\n";
-	while (true)
+	cout << "8. Exit\n";                    //done
+	// while (true)
 	{
 		cin >> choice;
+        // choice=2;
 		switch (choice)
 		{
 			case 1:
 			{
-
+                cout << "\nEnter prefix of name: ";
+                string s;
+                cin >> s;
+                vector<int> q;
+                if(displayContactsbyname(s,&q))
+                {
+                    cout << "\nEnter number of contact: ";
+                    int x;
+                    cin >> x;
+                    while(x>q.size())
+                    {
+                        cout << "\nEnter a Valid number: ";
+                        cin >> x;
+                    }
+                    displaycontact(p[q[x-1]]);
+                }
 				break;
 			}
 			case 2:
 			{
-
+                cout << "\nEnter prefix of num: ";
+                string s;
+                cin >> s;
+                vector<int> q;
+                if(displayContactsbynum(s,&q))
+                {
+                    cout << "\nEnter number of contact: ";
+                    int x;
+                    cin >> x;
+                    while(x>q.size())
+                    {
+                        cout << "\nEnter a Valid number: ";
+                        cin >> x;
+                    }
+                    displaycontact(p[q[x-1]]);
+                }
 				break;
 			}
 			case 3:
