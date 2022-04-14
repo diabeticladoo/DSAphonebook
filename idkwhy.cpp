@@ -138,6 +138,107 @@ void insertnum(string s, int j)
  }
 }
 
+bool isEmpty(Triename *rootname)
+{
+ for (char i = 'a'; i <= 'z'; i++)
+  if (rootname->child[i])
+   return false;
+
+ for (char i = '0'; i <= '9'; i++)
+  if (rootname->child[i])
+   return false;
+
+ if (rootname->child[' '])
+  return false;
+
+ return true;
+}
+
+bool isEmpty(Trienumber *rootnum)
+{
+ for (char i = 'a'; i <= 'z'; i++)
+  if (rootnum->child[i])
+   return false;
+
+ for (char i = '0'; i <= '9'; i++)
+  if (rootnum->child[i])
+   return false;
+
+ if (rootnum->child[' '])
+  return false;
+
+ return true;
+}
+Triename *trieDelete(Triename *rootname, string word, int height = 0)
+{
+ if (!rootname)
+ {
+  return NULL;
+ }
+
+ if (height == word.size())
+ {
+
+  if (rootname->isLast)
+  {
+   rootname->isLast = false;
+  }
+
+  if (isEmpty(rootname))
+  {
+   delete (rootname);
+   rootname = NULL;
+  }
+  return rootname;
+ }
+
+ Triename *itr = rootname;
+ Triename *nextNode = itr->child[word[height]];
+ itr->child[word[height]] = trieDelete(itr->child[word[height]], word, height + 1);
+
+ if (isEmpty(rootname) && rootname->isLast == false)
+ {
+  delete (rootname);
+  rootname = NULL;
+ }
+ return rootname;
+}
+
+Trienumber *trieDelete(Trienumber *rootname, string word, int height = 0)
+{
+ if (!rootnum)
+ {
+  return NULL;
+ }
+
+ if (height == word.size())
+ {
+
+  if (rootnum->isLast)
+  {
+   rootnum->isLast = false;
+  }
+
+  if (isEmpty(rootnum))
+  {
+   delete (rootnum);
+   rootnum = NULL;
+  }
+  return rootnum;
+ }
+
+ Trienumber *itr = rootnum;
+ Trienumber *nextNode = itr->child[word[height]];
+ itr->child[word[height]] = trieDelete(itr->child[word[height]], word, height + 1);
+
+ if (isEmpty(rootnum) && rootnum->isLast == false)
+ {
+  delete (rootnum);
+  rootnum = NULL;
+ }
+ return rootnum;
+}
+
 void displayContactsUtil(Triename *curNode, string prefix)
 {
 
@@ -274,10 +375,11 @@ void displayContactsbynum(string str)
  }
 }
 
-void delcontact(int n)
+void delcontact(int n, vector<contactinfo> p)
 {
  // open file in read mode or in mode
  ifstream is("contacts.txt");
+ trieDelete(rootname, p[n].getname());
 
  // open file in write mode or out mode
  ofstream ofs;
@@ -293,7 +395,7 @@ void delcontact(int n)
    line_no++;
 
   // file content not to be deleted
-  if (line_no != n)
+  if (line_no != n + 2)
    ofs << c;
  }
 
@@ -308,6 +410,15 @@ void delcontact(int n)
 
  // rename the file
  rename("temp.txt", "contacts.txt");
+
+ for (int i = 0; i < p.size() - 1; i++)
+ {
+  if (i >= n)
+  {
+   swap(p[i], p[i + 1]);
+  }
+ }
+ p.pop_back();
 }
 
 int main()
@@ -318,7 +429,6 @@ int main()
 
  int x, n;
  file >> n;
-
  vector<contactinfo> p(n);
  string a, b, c, d;
 
@@ -326,6 +436,7 @@ int main()
  {
   c = "";
   d = "";
+
   file >> x;
   getline(file, a, '$');
   // file >> a;
@@ -371,6 +482,7 @@ int main()
   {
   case 1:
   {
+   displayContactsbyname("a");
 
    break;
   }
@@ -381,7 +493,7 @@ int main()
   }
   case 3:
   {
-
+   // addcontact();
    break;
   }
   case 4:
@@ -397,7 +509,8 @@ int main()
   case 6:
   {
    file.close();
-   delcontact(2);
+   delcontact(0, p);
+
    break;
   }
   case 7:

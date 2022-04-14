@@ -1,3 +1,1 @@
-  contactinfo()
-  {
-  }
+addcontact();
