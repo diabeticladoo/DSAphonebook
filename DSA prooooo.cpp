@@ -43,10 +43,8 @@ public:
 };
 
 // WORK TO DO
-// make tree for numbers
 // add star cont adding bool
 // taking user input, add,delete making menu
-//
 
 struct Triename
 {
@@ -60,6 +58,11 @@ struct Triename
 
     for (char i = 'a'; i <= 'z'; i++)
       child[i] = NULL;
+	
+	for (char i = '0'; i <= '9'; i++)
+      child[i] = NULL;
+	
+
     child[' '] = NULL;
 
     isLast = false;
@@ -81,14 +84,14 @@ struct Trienumber
   }
 };
 
-Triename *root = new Triename();
-Trienumber *root2 = new Trienumber();
+Triename *rootname = new Triename();
+Trienumber *rootnum = new Trienumber();
 
-void insert(string s, int i, Triename *root)
+void insertname(string s, int j)
 {
   int len = s.length();
 
-  Triename *itr = root;
+  Triename *itr = rootname;
 
   for (int i = 0; i < len; i++)
   {
@@ -105,15 +108,15 @@ void insert(string s, int i, Triename *root)
     if (i == len - 1)
     {
       itr->isLast = true;
-      itr->pos = i;
+      itr->pos = j;
     }
   }
 }
 
-void insert(string s, int pos, Trienumber *root2)
+void insertnum(string s, int j)
 {
   int len = s.length();
-  Trienumber *itr = root2;
+  Trienumber *itr = rootnum;
 
   for (int i = 0; i < len; i++)
   {
@@ -131,7 +134,7 @@ void insert(string s, int pos, Trienumber *root2)
     if (i == len - 1)
     {
       itr->isLast = true;
-      itr->pos = i;
+      itr->pos = j;
     }
   }
 }
@@ -150,11 +153,20 @@ void displayContactsUtil(Triename *curNode, string prefix)
     if (nextNode != NULL)
       displayContactsUtil(nextNode, prefix + (char)i);
   }
+  for (char i = '0'; i <= '9'; i++)
+  {
+    Triename *nextNode = curNode->child[i];
+    if (nextNode != NULL)
+      displayContactsUtil(nextNode, prefix + (char)i);
+  }
   Triename *nextNode = curNode->child[' '];
+
   if (nextNode != NULL)
   {
     displayContactsUtil(nextNode, prefix + ' ');
   }
+
+
 }
 
 void displayContactsUtil(Trienumber *curNode, string prefix)
@@ -180,7 +192,7 @@ void displayContactsUtil(Trienumber *curNode, string prefix)
 
 void displayContactsbyname(string str)
 {
-  Triename *prevNode = root;
+  Triename *prevNode = rootname;
 
   string prefix = "";
   int len = str.length();
@@ -223,7 +235,7 @@ void displayContactsbyname(string str)
 
 void displayContactsbynum(string str)
 {
-  Trienumber *prevNode = root2;
+  Trienumber *prevNode = rootnum;
 
   string prefix = "";
   int len = str.length();
@@ -265,114 +277,113 @@ void displayContactsbynum(string str)
   }
 }
 
+
+
+
 int main()
 {
-  freopen("contacts.txt", "r", stdin);
-  int x, n;
-  cin >> n;
+	fstream  file;
+    file.open("contacts.txt", ios::out | ios::in );
+	// freopen("contacts.txt", "r", stdin);
+  
+	int x, n;
+	file >> n;
 
-  vector<contactinfo> p(n);
-  string a, b, c, d;
+	vector<contactinfo> p(n);
+	string a, b, c, d;
 
-  for (int i = 0; i < n; i++)
-  {
-    c = "";
-    d = "";
-    cin >> x;
-    getline(std::cin, a, '$');
-    // cin >> a;
-    cin >> b;
-    if (x == 2)
-    {
-      cin >> c;
-    }
-    else if (x == 3)
-    {
-      cin >> d;
-    }
-    else if (x == 4)
-    {
-      cin >> c >> d;
-    }
+	for (int i = 0; i < n; i++)
+	{
+		c = "";
+		d = "";
+		file >> x;
+		getline(file, a, '$');
+		// file >> a;
+		file >> b;
+		if (x == 2)
+		{
+			file >> c;
+		}
+		else if (x == 3)
+		{
+			file >> d;
+		}
+		else if (x == 4)
+		{
+			file >> c >> d;
+		}
 
-    contactinfo t(a, b, c, d);
-    p[i] = t;
+		contactinfo t(a, b, c, d);
+		p[i] = t;
 
-    insert(p[i].getname(), i, root);
-    insert(p[i].getnum(), i, root2);
-  }
+		insertname(p[i].getname(), i);
+		insertnum(p[i].getnum(), i);
+	}
 
-  for (int i = 0; i < n; i++)
-  {
-    contactinfo t = p[i];
-    cout << t.getname() << " " << t.getnum() << "\n";
-    cout << t.getemail() << " " << t.getprofession() << endl;
-  }
-  cout << "end\n\n";
 
-  displayContactsbyname("al");
-  displayContactsbynum("11");
+	displayContactsbyname("an");
+	displayContactsbynum("11");
 
-  int choice;
-  cout << "Welcome to ASA Phone Directory\n";
-  cout << "Please select a suitable option:\n";
-  cout << "1. Search by name\n";
-  cout << "2. Search by number\n";
-  cout << "3. Add to contact\n";
-  cout << "4. Edit Contact\n";
-  cout << "5. Add to favourite\n";
-  cout << "6. Delete a contact\n";
-  cout << "7. Add to contact\n";
-  cout << "8. Exit\n";
-  while (true)
-  {
-    cin >> choice;
-    switch (choice)
-    {
-    case 1:
-    {
+	int choice;
+	cout << "Welcome to ASA Phone Directory\n";
+	cout << "Please select a suitable option:\n";
+	cout << "1. Search by name\n";
+	cout << "2. Search by number\n";
+	cout << "3. Add to contact\n";
+	cout << "4. Edit Contact\n";
+	cout << "5. Add to favourite\n";
+	cout << "6. Delete a contact\n";
+	cout << "7. Add to contact\n";
+	cout << "8. Exit\n";
+	while (true)
+	{
+		cin >> choice;
+		switch (choice)
+		{
+			case 1:
+			{
 
-      break;
-    }
-    case 2:
-    {
+				break;
+			}
+			case 2:
+			{
 
-      break;
-    }
-    case 3:
-    {
+				break;
+			}
+			case 3:
+			{
 
-      break;
-    }
-    case 4:
-    {
+				break;
+			}
+			case 4:
+			{
 
-      break;
-    }
-    case 5:
-    {
+				break;
+			}
+			case 5:
+			{
 
-      break;
-    }
-    case 6:
-    {
+				break;
+			}
+			case 6:
+			{
 
-      break;
-    }
-    case 7:
-    {
+				break;
+			}
+			case 7:
+			{
 
-      break;
-    }
-    case 8:
-    {
-      cout << "Exiting\n";
-      exit(0);
-      break;
-    }
-    }
-  }
-  cout << "Working" << endl;
+				break;
+			}
+			case 8:
+			{
+				cout << "Exiting\n";
+				exit(0);
+				break;
+			}
+		}
+	}
+	cout << "Working" << endl;
 
-  return 0;
+	return 0;
 }
