@@ -1,320 +1,820 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 class contactinfo
 {
-	private:
-	string name;
-	string number;
-	string email;
-	string profession;
+private:
+    string name;
+    string number;
+    bool fav;
+    string email;
+    string profession;
 
-	public:
-	contactinfo(string a,string b,string c="",string d="")
-	{
-		name=a;
-		number=b;
-		email=c;
-		profession=d;
+public:
+    contactinfo(string a, string b,bool e=0, string c = "none", string d = "none")
+    {
+        name = a;
+        number = b;
+        fav=e;
+        email = c;
+        profession = d;
+    }
+    contactinfo()
+    {
+    }
 
-	}
-	contactinfo()
-	{
+    string getname()
+    {
+        return name;
+    }
 
-	}
-	
-	string getname()
-	{
-		return name;
-	}
+    string getnum()
+    {
+        return number;
+    }
 
-	string getnum()
-	{
-		return number;
-	}
+    string getemail()
+    {
+        return email;
+    }
 
-	string getemail()
-	{
-		return email;
-	}
+    string getprofession()
+    {
+        return profession;
+    }
+    
+    bool getfav()
+    {
+        return fav;
+    }
 
-	string getprofession()
-	{
-		return profession;
-	}
+    void mkfav()
+    {
+        fav=1;
+    }
+
+    void nmkfav()
+    {
+        fav=0;
+    }
 
 };
 
-// WORK TO DO
-// make tree for numbers
-// add star cont adding bool 
-// taking user input, add,delete making menu
-// 
-
-struct TrieNode
+struct Triename
 {
-	// Each Trie Node contains a Map 'child'
-	// where each alphabet points to a Trie
-	// Node.
-	// We can also use a fixed size array of
-	// size 256.
-	unordered_map<char,TrieNode*> child;
+    unordered_map<char, Triename *> child;
+    bool isLast;
+    int pos;
 
-	// 'isLast' is true if the node represents
-	// end of a contact
-	bool isLast;
-	contactinfo *loc;
+    Triename()
+    {
+        for (char i = 'a'; i <= 'z'; i++)
+            child[i] = NULL;
 
-	// Default Constructor
-	TrieNode()
-	{
-		// Initialize all the Trie nodes with NULL
-		for (char i = 'a'; i <= 'z'; i++)
-			child[i] = NULL;
-		child[' ']=NULL;
+        for (char i = '0'; i <= '9'; i++)
+            child[i] = NULL;
 
-		isLast = false;
-	}
+
+        child[' '] = NULL;
+
+        isLast = false;
+    }
 };
 
-// Making root NULL for ease so that it doesn't
-// have to be passed to all functions.
-TrieNode *root = new TrieNode();
-
-// Insert a Contact into the Trie
-void insert(string s,contactinfo *q)
+struct Trienumber
 {
-	int len = s.length();
+    unordered_map<char, Trienumber *> child;
 
-	// 'itr' is used to iterate the Trie Nodes
-	TrieNode *itr = root;
-	for (int i = 0; i < len; i++)
-	{
-		// Check if the s[i] is already present in
-		// Trie
-		TrieNode *nextNode = itr->child[s[i]];
-		if (nextNode == NULL)
-		{
-			// If not found then create a new TrieNode
-			nextNode = new TrieNode();
+    bool isLast;
+    int pos;
+    Trienumber()
+    {
+        for (char i = '0'; i <= '9'; i++)
+            child[i] = NULL;
 
-			// Insert into the Map
-			itr->child[s[i]] = nextNode;
-		}
+        isLast = false;
+    }
+};
 
-		// Move the iterator('itr') ,to point to next
-		// Trie Node
-		itr = nextNode;
+Triename *rootname = new Triename();
+Trienumber *rootnum = new Trienumber();
 
-		// If its the last character of the string 's'
-		// then mark 'isLast' as true
-		if (i == len - 1)
-		{
-			itr->isLast = true;
-			itr->loc=q;
-		}
-	}
+void insertname(string s, int j)
+{
+    int len = s.length();
+    Triename *itr = rootname;
+
+    for (int i = 0; i < len; i++)
+    {
+        Triename *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
+            nextNode = new Triename();
+
+            itr->child[s[i]] = nextNode;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            itr->isLast = true;
+            itr->pos = j;
+        }
+    }
 }
 
-// This function simply displays all dictionary words
-// going through current node. String 'prefix'
-// represents string corresponding to the path from
-// root to curNode.
-void displayContactsUtil(TrieNode *curNode, string prefix)
+void insertnum(string s, int j)
 {
-	// Check if the string 'prefix' ends at this Node
-	// If yes then display the string found so far
-	if (curNode->isLast)
-	{
-		cout << prefix << "--";
-		cout << curNode->loc->getnum() << "\n\n";
-	}
-	// Find all the adjacent Nodes to the current
-	// Node and then call the function recursively
-	// This is similar to performing DFS on a graph
-	for (char i = 'a'; i <= 'z'; i++)
-	{
-		TrieNode *nextNode = curNode->child[i];
-		if (nextNode != NULL)
-			displayContactsUtil(nextNode, prefix + (char)i);
-	}
-	TrieNode *nextNode = curNode->child[' '];
-	if(nextNode !=NULL)
-	{
-		displayContactsUtil(nextNode, prefix + ' ');
-	}
+    int len = s.length();
+    Trienumber *itr = rootnum;
+
+    for (int i = 0; i < len; i++)
+    {
+        Trienumber *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
+
+            nextNode = new Trienumber();
+
+            itr->child[s[i]] = nextNode;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            itr->isLast = true;
+            itr->pos = j;
+        }
+    }
 }
 
-// Display suggestions after every character enter by
-// the user for a given query string 'str'
-void displayContacts(string str)
+void displayContactsUtil(Triename *curNode, string prefix,vector<int> *p)
 {
-	TrieNode *prevNode = root;
 
-	string prefix = "";
-	int len = str.length();
+    if (curNode->isLast)
+    {
+        p->push_back(curNode->pos);
+        cout << p->size() << ". " << prefix << endl;
+    }
 
-	// Display the contact List for string formed
-	// after entering every character
-	int i;
-	for (i=0; i<len; i++)
-	{
-		// 'prefix' stores the string formed so far
-		prefix += (char)str[i];
+    for (char i = 'a'; i <= 'z'; i++)
+    {
+        Triename *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+        displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    for (char i = '0'; i <= '9'; i++)
+    {
+        Triename *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+        displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    Triename *nextNode = curNode->child[' '];
 
-		// Get the last character entered
-		char lastChar = prefix[i];
+    if (nextNode != NULL)
+    {
+        displayContactsUtil(nextNode, prefix + ' ',p);
+    }
 
-		// Find the Node corresponding to the last
-		// character of 'prefix' which is pointed by
-		// prevNode of the Trie
-		TrieNode *curNode = prevNode->child[lastChar];
 
-		// If nothing found, then break the loop as
-		// no more prefixes are going to be present.
-		if (curNode == NULL)
-		{
-			cout << "\nNo Results Found for " << prefix
-				<< "\n";
-			i++;
-			break;
-		}
-
-		// If present in trie then display all
-		// the contacts with given prefix.
-		cout << "\nSuggestions based on \"" << prefix
-			<< "\" are \n";
-		displayContactsUtil(curNode, prefix);
-
-		// Change prevNode for next prefix
-		prevNode = curNode;
-	}
-
-	// Once search fails for a prefix, we print
-	// "Not Results Found" for all remaining
-	// characters of current query string "str".
-	for (; i<len; i++)
-	{
-		prefix += (char)str[i];
-		cout << "\nNo Results Found for \"" << prefix
-			<< "\" \n";
-	}
 }
 
-// Insert all the Contacts into the Trie
-// void insertIntoTrie(string name)
-// {
-// 	// Initialize root Node
-// 	root = new TrieNode();
+void displayContactsUtil(Trienumber *curNode, string prefix,vector<int> *p)
+{
 
-// 	insert(name);
-// }
+    if (curNode->isLast)
+    {
+        p->push_back(curNode->pos);
+        cout << p->size() << ". " << prefix << endl;
+    }
 
-// Driver program to test above functions
+    for (char i = '0'; i <= '9'; i++)
+    {
+        Trienumber *nextNode = curNode->child[i];
+        if (nextNode != NULL)
+            displayContactsUtil(nextNode, prefix + (char)i,p);
+    }
+    
+}
+
+bool displayContactsbyname(string str,vector<int> *p)
+{
+    Triename *prevNode = rootname;
+
+    string prefix = "";
+    int len = str.length();
+
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        prefix += (char)str[i];
+
+        char lastChar = prefix[i];
+
+        Triename *curNode = prevNode->child[lastChar];
+
+        if (curNode == NULL)
+        {
+            cout << "\nNo Results Found for " << str
+                << "\n";
+            i++;
+            return 0;
+        }
+
+        if (i == len - 1)
+        {
+            cout << "\nSuggestions based on \"" << prefix
+                << "\" are \n";
+
+            displayContactsUtil(curNode, prefix,p);
+            return 1;
+        }
+        prevNode = curNode;
+    }
+    return 0;
+
+        
+ 
+}
+
+bool displayContactsbynum(string str,vector<int> *p)
+{
+    Trienumber *prevNode = rootnum;
+
+    string prefix = "";
+    int len = str.length();
+
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        prefix += (char)str[i];
+
+        char lastChar = prefix[i];
+
+        Trienumber *curNode = prevNode->child[lastChar];
+
+        if (curNode == NULL)
+        {
+            cout << "\nNo Results Found for " << str
+                << "\n";
+            i++;
+            return 0;
+        }
+
+        if (i == len - 1)
+        {
+            cout << "\nSuggestions based on \"" << prefix
+                << "\" are \n";
+
+            displayContactsUtil(curNode, prefix,p);
+            return 1;
+        }
+
+        prevNode = curNode;
+    }
+    return 1;
+  
+}
+
+bool isEmpty(Triename *rootname)
+{
+    for (char i = 'a'; i <= 'z'; i++)
+        if (rootname->child[i])
+            return false;
+
+    for (char i = '0'; i <= '9'; i++)
+        if (rootname->child[i])
+            return false;
+
+    if (rootname->child[' '])
+        return false;
+
+    return true;
+}
+
+bool isEmpty(Trienumber *rootnum)
+{
+    for (char i = 'a'; i <= 'z'; i++)
+        if (rootnum->child[i])
+            return false;
+
+    for (char i = '0'; i <= '9'; i++)
+        if (rootnum->child[i])
+            return false;
+
+    if (rootnum->child[' '])
+        return false;
+
+    return true;
+}
+
+Triename *trieDelete(Triename *rootname, string word, int height = 0)
+{
+    if (!rootname)
+    {
+        return NULL;
+    }
+
+    if (height == word.size())
+    {
+
+        if (rootname->isLast)
+        {
+            rootname->isLast = false;
+        }
+
+        if (isEmpty(rootname))
+        {
+            delete (rootname);
+            rootname = NULL;
+        }
+        return rootname;
+    }
+
+    Triename *itr = rootname;
+    Triename *nextNode = itr->child[word[height]];
+    itr->child[word[height]] = trieDelete(itr->child[word[height]], word, height + 1);
+
+    if (isEmpty(rootname) && rootname->isLast == false)
+    {
+        delete (rootname);
+        rootname = NULL;
+    }
+    return rootname;
+}
+
+Trienumber *trieDelete(Trienumber *rootname, string word, int height = 0)
+{
+    if (!rootnum)
+    {
+        return NULL;
+    }
+
+    if (height == word.size())
+    {
+
+        if (rootnum->isLast)
+        {
+            rootnum->isLast = false;
+        }
+
+        if (isEmpty(rootnum))
+        {
+            delete (rootnum);
+            rootnum = NULL;
+        }
+        return rootnum;
+    }
+
+    Trienumber *itr = rootnum;
+    Trienumber *nextNode = itr->child[word[height]];
+    itr->child[word[height]] = trieDelete(itr->child[word[height]], word, height + 1);
+
+    if (isEmpty(rootnum) && rootnum->isLast == false)
+    {
+        delete (rootnum);
+        rootnum = NULL;
+    }
+    return rootnum;
+}
+
+void displaycontact(contactinfo p)
+{
+    cout << "Name: " << p.getname() << endl;
+    cout << "Phone Number: " << p.getnum() << endl;
+    cout << "Fav contact: ";
+    if(p.getfav())
+        cout << "YES\n";
+    else
+        cout << "NO\n";
+    cout << "Email: " << p.getemail() << endl;
+    cout << "Profession: " << p.getprofession() << endl;
+   
+    string s;
+    do {
+     cout << "\nPress ENTER to exit" << endl;
+     getline(cin, s);
+    } while (s.length() != 0);
+}
+
+contactinfo addContact()
+{
+    string name = "", number = "", email = "", prof = "", temp;
+
+    cout<<"Enter the following details:\n";
+
+    while(name.size() == 0){
+        cout<<"Name(required): ";
+        getline(std::cin, name, '\n');
+        if(name.size() == 0){
+            cout<<"Please enter a name!";
+        }     
+    }
+
+    while(number.size() != 10){
+        cout<<"Phone Number(required): ";
+        getline(std::cin, number, '\n');
+        if(number.size() != 10){
+            cout<<"Enter a valid 10 digit number!\n";
+        }
+    }
+
+    cout << "Email: ";
+    getline(std::cin, temp);
+    if (!temp.empty()) {
+        std::istringstream stream(temp);
+        stream >> email;
+    }
+
+    cout<<"Profession: ";
+    getline(std::cin, temp);
+    if (!temp.empty()) {
+        std::istringstream stream(temp);
+        stream >> prof;
+    }
+
+    int x = 1;
+    if(email.size()>=2)      x+=1;
+    else                     email = "";
+    if(prof.size()>=2)       x+=2;
+    else                     prof = "";
+    
+    contactinfo t(name,number,0,email,prof);
+    ofstream ifile;
+    ifile.open("contacts.txt", ios::app);
+    ifile << "\n" << x << name << "$ " << number << " "  << email << " " << prof;
+    ifile.seekp(0);
+    ifile << "HERE";
+    ifile.close();
+
+    return t;
+}
+
+void showfav(vector<contactinfo> p,vector<int> q,vector<int> *f,vector<int> d={})
+{
+    int x=0,y=0;
+    int n=q.size(),m=d.size();
+    for(int i=0;i<n;i++)
+    {
+        if(q[i]==-1)
+        {
+            continue;
+        }
+        while(y<m && d[y]<q[i])
+        {
+            y++;
+        }
+        if(y<m && d[y]==q[i])
+        {
+            continue;
+        }
+        f->push_back(q[i]);
+        cout << f->size() << ". " << p[q[i]].getname() << endl; 
+    }
+}
+
+void options()
+{
+    cout << "\nWelcome to ASA Phone Directory\n";
+	cout << "Please select a suitable option:\n";
+	cout << "1. Search by name\n";          //done
+	cout << "2. Search by number\n";        //done
+	cout << "3. Add to contact\n";          //done
+	cout << "4. Edit Contact\n";
+	cout << "5. Delete a contact\n";        //done
+	cout << "6. Show favourites\n";         //done
+	cout << "7. Add to favourites\n";         
+	cout << "8. Delete from favourites\n";
+    cout << "9. Show all contacts\n";       //done  
+    cout << "10. Exit\n";                   //done
+}
+
+void delcontact(vector<int> p)  
+{
+    ifstream is("contacts.txt");
+    int count = 0;
+
+    ofstream ofs;
+    ofs.open("temp.txt", ofstream::out);
+
+    char c;
+    int line_no = 1;
+    sort(p.begin(),p.end());
+    int x=0;
+    while (is.get(c))
+    {
+        while(x<p.size() && p[x]<line_no -2)    
+            x++;
+        
+        if (c == '\n')
+            line_no++;
+
+        if (x<p.size() && p[x]==line_no - 2)
+            continue;
+        else
+            ofs << c;
+    }
+
+    ofs.close();
+
+    is.close();
+
+    remove("contacts.txt");
+    rename("temp.txt", "contacts.txt");
+}
+
+void dispall(vector<contactinfo> p)
+{
+    vector<int> q;
+    displayContactsUtil(rootname,"",&q);
+    cout << "\n--Press 0 for exit--\n";
+    cout << "Choose contact number: ";
+    int x;
+    cin >> x;
+    if(!x)
+    return;
+    else
+    {
+        while(x>q.size())
+        {
+            cout << "\nEnter a valid number: ";
+            cin >> x;
+        }
+        
+        string s;
+        do {
+        // cout << "\nPress ENTER to exit" << endl;
+        getline(cin, s);
+        } while (s.length() != 0);
+        cout << endl;
+
+        displaycontact(p[q[x-1]]);
+    }
+}
+
+//Things left
+//m n 
+// edit , add delete fav
+
+
 int main()
 {
-	freopen("contacts.txt", "r", stdin); 
-	int x,n;
-	cin >> n;
-	
+	fstream  file;
+    file.open("contacts.txt", ios::out | ios::in );
+	// freopen("contacts.txt", "r", stdin);
+  
+	int x, n,m;
+	file >> n;
+    file >> m;
+
 	vector<contactinfo> p(n);
-	string a,b,c,d;
+    vector<int> fav(m);
 
-	for(int i=0;i<n;i++)
+	string a, b, c, d;
+    bool f;
+    int favcount=0;
+
+	for (int i = 0; i < n; i++)
 	{
-		c="";
-		d="";
-		cin >> x;	
-		getline(std::cin,a,'$');
-		// cin >> a;
-		cin >> b;
-		if(x==2)
+		c = "";
+		d = "";
+		file >> x;
+		getline(file, a, '$');
+		// file >> a;
+		file >> b;
+        file >> f;
+		if (x == 2)
 		{
-			cin >> c;
+			file >> c;
 		}
-		else if(x==3)
+		else if (x == 3)
 		{
-			cin >> d;
+			file >> d;
 		}
-		else if(x==4)
+		else if (x == 4)
 		{
-			cin >> c >> d;
+			file >> c >> d;
 		}
-		
-		contactinfo t(a,b,c,d);
-		p[i]=t;
-		
-		insert(p[i].getname(),&p[i]);
+
+		contactinfo t(a, b, f, c, d);
+		p[i] = t;
+
+		insertname(p[i].getname(), i);
+		insertnum(p[i].getnum(), i);
 	}
-	
-	for(int i=0;i<n;i++)
+
+    file.close();
+    x=0;
+    for(int i=0;i<n;i++)
+    {
+        if(p[i].getfav())
+        {
+            fav[x++]=i;    
+        }
+    }    
+    
+    vector<int> del;
+
+
+	options();    
+    while (true)
 	{
-		contactinfo t=p[i];
-		cout << t.getname() << " " << t.getnum() << "\n";
-		cout << t.getemail() << " " << t.getprofession() << endl;
-	}
-	cout << "end\n\n";
-	fclose(stdin);
-	displayContacts("a");
-	int choice;
-	cout<<"Welcome to ASA Phone Directory\n";
-	cout<<"Please select a suitable option:\n";
-	cout<<"1. Search by name\n";
-	cout<<"2. Search by number\n";
-	cout<<"3. Add to contact\n";
-	cout<<"4. Edit Contact\n";
-	cout<<"5. Add to favourite\n";
-	cout<<"6. Delete a contact\n";
-	cout<<"7. Exit\n";
-	while(true){
-		cin>>choice;
-		switch(choice){
-			case 1:{
+        int choice;
+		cin >> choice;
+		switch (choice)
+		{
+			case 1:         //search by name        //done
+			{
+                cout << "\nEnter prefix of name: ";
+                string s;
+                cin >> s;
+                vector<int> q;
+                if(displayContactsbyname(s,&q))
+                {
+                    cout << "\nEnter number of contact: ";
+                    int x;
+                    cin >> x;
+                    while(x>q.size())
+                    {
+                        cout << "\nEnter a Valid number: ";
+                        cin >> x;
+                    }
+                    displaycontact(p[q[x-1]]);
+                }
+				break;
+			}
+			case 2:         //search by number      //done
+			{
+                cout << "\nEnter prefix of num: ";
+                string s;
+                cin >> s;
+                vector<int> q;
+                if(displayContactsbynum(s,&q))
+                {
+                    cout << "\nEnter number of contact: ";
+                    int x;
+                    cin >> x;
+                    while(x>q.size())
+                    {
+                        cout << "\nEnter a Valid number: ";
+                        cin >> x;
+                    }
+                    displaycontact(p[q[x-1]]);
+                }
+				break;
+			}
+			case 3:         //add to contacts       //done    
+			{
+                p.push_back(addContact());
+                n++;
+
+                cout << "\n Contact added successfully\n";
+				break;
+			}
+			case 4:         //edit contact          
+			{
 
 				break;
 			}
-			case 2:{
+			case 5:         //delete contact        //done
+			{
+                cout << "\n1. Delete contact by name\n";
+                cout << "2. Delete contact by number\n";
+                cout << "Choose option number: ";
+                int x;
+                cin >> x;
+                while(!(x==1 || x==2))
+                {
+                    cout << "Enter a valid number: ";
+                    cin >> x;
+                }
+                string s;
+                if(x==1)
+                {
+                    cout << "Enter prefix of name: ";
+                }
+                else
+                {
+                    cout << "Enter prefix of number: ";
+                }
+                cin >> s;
+                vector<int> t;
+                if(x==1)
+                {
+                    displayContactsbyname(s,&t);
+                }
+                else
+                    displayContactsbynum(s,&t);
+
+                cout << "Select the contact you want to delete " << endl;
+                cin >> x;
+                while(x>t.size())
+                {
+                    cout << "Enter a valid number: ";
+                    cin >> x;
+                }
+                cout << "Contact " << p[t[x-1]].getname() << " Deleted \n";
+                trieDelete(rootname, p[t[x-1]].getname());
+                del.push_back(t[x-1]);
+                n--;
+				break;
+			}
+			case 6:         //show favourites       //done
+			{
+                cout << "\nDisplaying Favourite Contacts:\n";
+                vector<int> f;
+                showfav(p,fav,&f,del);
+				if(f.size()==0)
+                {
+                    cout << "No favourite Contacts to show\n";
+                }
+                else
+                {
+                    cout << "Select favourite contact number: ";
+                    int x;
+                    cin >> x;
+                    while(x>f.size())
+                    {
+                        cout << "\nEnter a valid number: ";
+                        cin >> x;
+                    }
+                    cout << endl;
+                    displaycontact(p[f[x-1]]);
+                }
+				break;
+			}
+			case 7:         //add to favourites     //edit in file
+			{
+                cout << "\nEnter name prefix: ";
+                string s;
+                cin >> s;
+                vector<int> q;
+                if(displayContactsbyname(s,&q))
+                {
+                    cout << "\nEnter number of contact: ";
+                    int x;
+                    cin >> x;
+                    while(x>q.size())
+                    {
+                        cout << "\nEnter a Valid number: ";
+                        cin >> x;
+                    }
+                    p[q[x-1]].mkfav();
+                    fav.push_back(q[x-1]);
+                    m++;
+                    cout << endl << p[q[x-1]].getname() << " contact added to favourites \n";
+                }
+                else
+                {
+                    cout << "\nNo contacts with prefix " << s << endl;
+                }
+                
+                //edit contact in file
+                break;
+			}
+			case 8:         //delete from favourites // edit in file
+			{
+                vector<int> t;
+                showfav(p,fav,&t,del);
+                cout << "\n Enter number of contact to be removed from favourite: ";
+                int x;
+                cin >> x;
+                while(x>t.size());
+                {
+                    cout << "\nEnter a valid number: ";
+                    cin >> x;
+                }
+
+                cout << endl << p[t[x-1]].getname() << " contact removed from favourites "; 
+                m--;
+                for(int i=0;i<fav.size();i++)
+                {
+                    if(fav[i]==t[x-1])
+                    {
+                        fav[i]=-1;
+                        break;
+                    }
+                }
 
 				break;
 			}
-			case 3:{
-
-				break;
-			}
-			case 4:{
-
-				break;
-			}
-			case 5:{
-
-				break;
-			}
-			case 6:{
-
-				break;
-			}
-			case 7:{
-
-				break;
-			}
-			case 8:{
-				cout<<"Exiting\n";
+            case 9:         //display all contacts  //done
+            {
+                dispall(p);
+                break;
+            }
+            case 10:        //exit                  //done
+            {
+                delcontact(del);
+                cout << "Exiting\n";
 				exit(0);
 				break;
-			}
-		}
+            }
+        }
+
 	}
-
-	// Insert all the Contacts into Trie
-	// insertIntoTrie(contacts, n);
-
-	// string query = "gekk";
-
-	// Note that the user will enter 'g' then 'e', so
-	// first display all the strings with prefix as 'g'
-	// and then all the strings with prefix as 'ge'
-	// displayContacts(query);
 	cout << "Working" << endl;
 
 	return 0;
