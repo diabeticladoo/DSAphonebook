@@ -363,7 +363,7 @@ void addContact(){
      cout << x<< name <<" "<<number<<" "<<email<<" "<<prof<<'\n';
      ofstream ifile;
      ifile.open("contacts.txt", ios::app);
-     ifile << "\n" << x << name << " " << number << " " << email << " " << prof;
+     ifile << "\n" << x << name << "$ " << number << " " << email << " " << prof;
      ifile.close();
      return;
 }
