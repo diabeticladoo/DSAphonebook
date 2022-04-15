@@ -310,57 +310,48 @@ void delcontact(int n)
  rename("temp.txt", "contacts.txt");
 }
 
-void addContact(){
-     string name = "", number = "", email = "", prof = "";
-     std::cout<<"Enter the following details:\n";
-     std::cout<<"Name(required): ";
-     // cin>>name;
-     while(name.size()<=1)
-          {getline(std::cin, name, '\n');}
-     std::cout<<"Phone Number(required): ";
-     // cin>>number;
-     while(number.size()<=1)
-          {getline(std::cin, number, '\n');}
-     // cin.getline(number, '\n');
-     std::cout << "Email: ";
-     // email = cin.get();
-     // if (email == "\n")  email = " ";
-     // else                email = cin.get();
-     string temp;
+void addContact()
+{
+     string name = "", number = "", email = "", prof = "", temp;
+
+     cout<<"Enter the following details:\n";
+
+     while(name.size() == 0){
+          cout<<"Name(required): ";
+          getline(std::cin, name, '\n');
+          if(name.size() == 0){
+               cout<<"Please enter a name!";
+          }     
+     }
+
+     while(number.size() != 10){
+          cout<<"Phone Number(required): ";
+          getline(std::cin, number, '\n');
+          if(number.size() != 10){
+               cout<<"Enter a valid 10 digit number!\n";
+          }
+     }
+
+     cout << "Email: ";
      getline(std::cin, temp);
      if (!temp.empty()) {
           std::istringstream stream(temp);
           stream >> email;
      }
-     // cin.sync();
-     // cin>>email;
-     //      getline(std::cin, email, '-');
-     std::cout<<"Profession: ";
-     // prof = cin.get();
-     // if (prof == "\n")   prof = " ";
-     // else                prof = cin.get();
+
+     cout<<"Profession: ";
      getline(std::cin, temp);
      if (!temp.empty()) {
           std::istringstream stream(temp);
           stream >> prof;
      }
-     // cin.sync();
-     // cin>>prof;
-     //      getline(std::cin, prof, '-');
-     // if(name == "\n" || name == "" || number == "\n" || number == "" ){
-     //      cout<<"Please enter Name and Phone Number\n";
-     //      // return;
-     // }
-     int x = 1;
-     cout<<email.size()<<" "<<prof.size()<<endl;
-     if(email.size()>=2)      {x+=1; cout<<"x+1\n";}
-     else                     {email = "";}
 
-     if(prof.size()>=2)       {x+=2; cout<<"x+2\n";}
-     else                     {prof = "\n";}
+     int x = 1;
+     if(email.size()>=2)      x+=1;
+     else                     email = "";
+     if(prof.size()>=2)       x+=2;
+     else                     prof = "";
      
-     // name ("$");
-     cout << x<< name <<" "<<number<<" "<<email<<" "<<prof<<'\n';
      ofstream ifile;
      ifile.open("contacts.txt", ios::app);
      ifile << "\n" << x << name << "$ " << number << " " << email << " " << prof;
@@ -417,20 +408,22 @@ int main()
      cout << "7. Exit\n";
      while (true)
      {
-          // cin >> choice;
-          choice =3;
+          cin >> choice;
+          string temp;
           switch (choice)
           {
                case 1:
-               {
-
-                    break;
-               }
-               case 2:
-               {
-
-                    break;
-               }
+			{
+                    cout<<"Enter the name you want to search: ";
+                    cin>>temp;
+				break;
+			}
+			case 2:
+			{
+                    cout<<"Enter the number you want to search: ";
+                    cin>>temp;
+				break;
+			}
                case 3:
                {
                     addContact();
