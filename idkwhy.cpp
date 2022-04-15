@@ -310,110 +310,162 @@ void delcontact(int n)
  rename("temp.txt", "contacts.txt");
 }
 
+void addContact(){
+     string name = "", number = "", email = "", prof = "";
+     std::cout<<"Enter the following details:\n";
+     std::cout<<"Name(required): ";
+     // cin>>name;
+     while(name.size()<=1)
+          {getline(std::cin, name, '\n');}
+     std::cout<<"Phone Number(required): ";
+     // cin>>number;
+     while(number.size()<=1)
+          {getline(std::cin, number, '\n');}
+     // cin.getline(number, '\n');
+     std::cout << "Email: ";
+     // email = cin.get();
+     // if (email == "\n")  email = " ";
+     // else                email = cin.get();
+     string temp;
+     getline(std::cin, temp);
+     if (!temp.empty()) {
+          std::istringstream stream(temp);
+          stream >> email;
+     }
+     // cin.sync();
+     // cin>>email;
+     //      getline(std::cin, email, '-');
+     std::cout<<"Profession: ";
+     // prof = cin.get();
+     // if (prof == "\n")   prof = " ";
+     // else                prof = cin.get();
+     getline(std::cin, temp);
+     if (!temp.empty()) {
+          std::istringstream stream(temp);
+          stream >> prof;
+     }
+     // cin.sync();
+     // cin>>prof;
+     //      getline(std::cin, prof, '-');
+     // if(name == "\n" || name == "" || number == "\n" || number == "" ){
+     //      cout<<"Please enter Name and Phone Number\n";
+     //      // return;
+     // }
+     int x = 1;
+     cout<<email.size()<<" "<<prof.size()<<endl;
+     if(email.size()>=2)      {x+=1; cout<<"x+1\n";}
+     else                     {email = "";}
+
+     if(prof.size()>=2)       {x+=2; cout<<"x+2\n";}
+     else                     {prof = "\n";}
+     
+     // name ("$");
+     cout << x<< name <<" "<<number<<" "<<email<<" "<<prof<<'\n';
+     ofstream ifile;
+     ifile.open("contacts.txt", ios::app);
+     ifile << "\n" << x << name << " " << number << " " << email << " " << prof;
+     ifile.close();
+     return;
+}
+
 int main()
 {
- fstream file;
- file.open("contacts.txt", ios::out | ios::in);
- // freopen("contacts.txt", "r", stdin);
+     fstream file;
+     file.open("contacts.txt", ios::out | ios::in);
+     // freopen("contacts.txt", "r", stdin);
 
- int x, n;
- file >> n;
+     int x, n;
+     file >> n;
 
- vector<contactinfo> p(n);
- string a, b, c, d;
+     vector<contactinfo> p(n);
+     string a, b, c, d;
 
- for (int i = 0; i < n; i++)
- {
-  c = "";
-  d = "";
-  file >> x;
-  getline(file, a, '$');
-  // file >> a;
-  file >> b;
-  if (x == 2)
-  {
-   file >> c;
-  }
-  else if (x == 3)
-  {
-   file >> d;
-  }
-  else if (x == 4)
-  {
-   file >> c >> d;
-  }
+     for (int i = 0; i < n; i++)
+     {
+     c = "";
+     d = "";
+     file >> x;
+     getline(file, a, '$');
+     // file >> a;
+     file >> b;
+     if (x == 2)
+     file >> c;
+     else if (x == 3)
+     file >> d;
+     else if (x == 4)
+     file >> c >> d;
 
-  contactinfo t(a, b, c, d);
-  p[i] = t;
+     contactinfo t(a, b, c, d);
+     p[i] = t;
 
-  insertname(p[i].getname(), i);
-  insertnum(p[i].getnum(), i);
- }
+     insertname(p[i].getname(), i);
+     insertnum(p[i].getnum(), i);
+     }
 
- displayContactsbyname("an");
- displayContactsbynum("11");
+     displayContactsbyname("an");
+     displayContactsbynum("11");
 
- int choice;
- cout << "Welcome to ASA Phone Directory\n";
- cout << "Please select a suitable option:\n";
- cout << "1. Search by name\n";
- cout << "2. Search by number\n";
- cout << "3. Add to contact\n";
- cout << "4. Edit Contact\n";
- cout << "5. Add to favourite\n";
- cout << "6. Delete a contact\n";
- cout << "7. Add to contact\n";
- cout << "8. Exit\n";
- while (true)
- {
-  cin >> choice;
-  switch (choice)
-  {
-  case 1:
-  {
+     int choice;
+     cout << "Welcome to ASA Phone Directory\n";
+     cout << "Please select a suitable option:\n";
+     cout << "1. Search by name\n";
+     cout << "2. Search by number\n";
+     cout << "3. Add to contact\n";
+     cout << "4. Edit Contact\n";
+     cout << "5. Add to favourite\n";
+     cout << "6. Delete a contact\n";
+     cout << "7. Exit\n";
+     while (true)
+     {
+          // cin >> choice;
+          choice =3;
+          switch (choice)
+          {
+               case 1:
+               {
 
-   break;
-  }
-  case 2:
-  {
+                    break;
+               }
+               case 2:
+               {
 
-   break;
-  }
-  case 3:
-  {
+                    break;
+               }
+               case 3:
+               {
+                    addContact();
+                    break;
+               }
+               case 4:
+               {
 
-   break;
-  }
-  case 4:
-  {
+                    break;
+               }
+               case 5:
+               {
 
-   break;
-  }
-  case 5:
-  {
+                    break;
+               }
+               case 6:
+               {
+                    file.close();
+                    delcontact(2);
+                    break;
+               }
+               case 7:
+               {
 
-   break;
-  }
-  case 6:
-  {
-   file.close();
-   delcontact(2);
-   break;
-  }
-  case 7:
-  {
+                    break;
+               }
+               case 8:
+               {
+                    cout << "Exiting\n";
+                    exit(0);
+                    break;
+               }
+          }
+     }
+     cout << "Working" << endl;
 
-   break;
-  }
-  case 8:
-  {
-   cout << "Exiting\n";
-   exit(0);
-   break;
-  }
-  }
- }
- cout << "Working" << endl;
-
- return 0;
+     return 0;
 }
