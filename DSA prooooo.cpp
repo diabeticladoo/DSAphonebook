@@ -871,7 +871,7 @@ int main()
                     cin >> x;
                 }
                 int a = t[x - 1];
-                cout << "What do you want to edit?\n"
+                cout << "What do you want to edit?\n";
                 cout << "1.Name\n";
                 cout << "2.Phone Number\n";
                 cout << "3.Email\n";
