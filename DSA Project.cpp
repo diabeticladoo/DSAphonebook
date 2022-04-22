@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
 class contactinfo
@@ -57,7 +58,25 @@ public:
     {
         fav=0;
     }
+     
+    void setname(string a)
+    {
+        name = a;
+    }
+    
+    void setnum(string a)
+    {
+        number = a;
+    }
 
+    void setemail(string a)
+    {
+        email = a;
+    }
+    void setprofession(string a)
+    {
+        profession = a;
+    }
 };
 
 struct Triename
@@ -98,6 +117,59 @@ struct Trienumber
 
 Triename *rootname = new Triename();
 Trienumber *rootnum = new Trienumber();
+
+bool checkname(string s)
+{
+    int len = s.length();
+    Triename *itr = rootname;
+
+    for (int i = 0; i < len; i++)
+    {
+        Triename *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
+            return 0;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            if(itr->isLast)
+            {
+                return 1;
+            }
+            // itr->isLast = true;
+            // itr->pos = j;
+            return 0;
+        }
+    }
+}
+
+bool checknum(string s)
+{
+    int len = s.length();
+    Trienumber *itr = rootnum;
+
+    for (int i = 0; i < len; i++)
+    {
+        Trienumber *nextNode = itr->child[s[i]];
+        if (nextNode == NULL)
+        {
+            return 0;
+        }
+
+        itr = nextNode;
+
+        if (i == len - 1)
+        {
+            if(itr->isLast)
+                return 1;
+            
+            return 0;
+        }
+    }
+}
 
 void insertname(string s, int j)
 {
@@ -393,17 +465,24 @@ void displaycontact(contactinfo p)
     cout << "Profession: " << p.getprofession() << endl;
    
     string s;
+    
     do {
-     cout << "\nPress ENTER to exit" << endl;
+    //  cout << "\nPress ENTER to return" << endl;
      getline(cin, s);
     } while (s.length() != 0);
 }
 
-contactinfo addContact()
+contactinfo addContact(int n)
 {
     string name = "", number = "", email = "", prof = "", temp;
 
     cout<<"Enter the following details:\n";
+
+    string s;
+    do {
+    getline(cin, s);
+    } while (s.length() != 0);
+    cout << endl;
 
     while(name.size() == 0){
         cout<<"Name(required): ";
@@ -441,13 +520,85 @@ contactinfo addContact()
     if(prof.size()>=2)       x+=2;
     else                     prof = "";
     
+    transform(name.begin(), name.end(), name.begin(), ::tolower);
+    transform(email.begin(), email.end(), email.begin(), ::tolower);
+    transform(prof.begin(), prof.end(), prof.begin(), ::tolower);
+
+    bool bb=1;
+    while(bb)
+    {
+        bool c=checkname(name);
+        bool d=checknum(number);
+        if(c && d)
+        {
+            cout << "Same name and number already exists, enter valid details: ";
+        }
+        else if(c)
+        {
+            cout << "Same name already exists, enter valid details: \n";
+        }
+        else if(d)
+        {
+            cout << "Same number already exists, enter valid number: \n";
+        }
+        else
+        {
+            bb=0;
+            break;
+        }
+        name="";
+
+        while(name.size() == 0){
+            cout<<"Name(required): ";
+            getline(std::cin, name, '\n');
+            if(name.size() == 0){
+                cout<<"Please enter a name!";
+            }     
+        }
+        number="";
+        while(number.size() != 10){
+            cout<<"Phone Number(required): ";
+            getline(std::cin, number, '\n');
+            if(number.size() != 10){
+                cout<<"Enter a valid 10 digit number!\n";
+            }
+        }
+
+        cout << "Email: ";
+        getline(std::cin, temp);
+        if (!temp.empty()) {
+            std::istringstream stream(temp);
+            stream >> email;
+        }
+
+        cout<<"Profession: ";
+        getline(std::cin, temp);
+        if (!temp.empty()) {
+            std::istringstream stream(temp);
+            stream >> prof;
+        }
+
+        int x = 1;
+        if(email.size()>=2)      x+=1;
+        else                     email = "";
+        if(prof.size()>=2)       x+=2;
+        else                     prof = "";
+        
+        transform(name.begin(), name.end(), name.begin(), ::tolower);
+        transform(email.begin(), email.end(), email.begin(), ::tolower);
+        transform(prof.begin(), prof.end(), prof.begin(), ::tolower);
+
+    }
+
+
     contactinfo t(name,number,0,email,prof);
     ofstream ifile;
     ifile.open("contacts.txt", ios::app);
-    ifile << "\n" << x << name << "$ " << number << " "  << email << " " << prof;
-    ifile.seekp(0);
-    ifile << "HERE";
+    ifile << "\n" << x << name << "$ " << number << " " << 0 << " " << email << " " << prof;
     ifile.close();
+    
+    insertname(name,n);
+    insertnum(number,n);
 
     return t;
 }
@@ -475,8 +626,19 @@ void showfav(vector<contactinfo> p,vector<int> q,vector<int> *f,vector<int> d={}
     }
 }
 
-void options()
+void options(int x=1)
 {
+
+    if(x)
+    {
+        string s;
+        cin.sync();
+        do {
+         cout << "\nPress ENTER to return";
+        getline(cin, s);
+        } while (s.length() != 0);
+    }
+
     cout << "\nWelcome to ASA Phone Directory\n";
 	cout << "Please select a suitable option:\n";
 	cout << "1. Search by name\n";          //done
@@ -491,7 +653,7 @@ void options()
     cout << "10. Exit\n";                   //done
 }
 
-void delcontact(vector<int> p)  
+void delcontact(vector<int> p,int n,int m)  
 {
     ifstream is("contacts.txt");
     int count = 0;
@@ -503,6 +665,7 @@ void delcontact(vector<int> p)
     int line_no = 1;
     sort(p.begin(),p.end());
     int x=0;
+    ofs<<n<<" "<<m;
     while (is.get(c))
     {
         while(x<p.size() && p[x]<line_no -2)    
@@ -511,7 +674,7 @@ void delcontact(vector<int> p)
         if (c == '\n')
             line_no++;
 
-        if (x<p.size() && p[x]==line_no - 2)
+        if ((x<p.size() && p[x]==line_no - 2) || line_no==1)
             continue;
         else
             ofs << c;
@@ -529,7 +692,7 @@ void dispall(vector<contactinfo> p)
 {
     vector<int> q;
     displayContactsUtil(rootname,"",&q);
-    cout << "\n--Press 0 for exit--\n";
+    cout << "\n--Enter 0 to cancel--\n";
     cout << "Choose contact number: ";
     int x;
     cin >> x;
@@ -543,21 +706,114 @@ void dispall(vector<contactinfo> p)
             cin >> x;
         }
         
-        string s;
-        do {
-        // cout << "\nPress ENTER to exit" << endl;
-        getline(cin, s);
-        } while (s.length() != 0);
-        cout << endl;
-
         displaycontact(p[q[x-1]]);
     }
 }
 
-//Things left
-//m n 
-// edit , add delete fav
+void Editcontact(vector<contactinfo> &p, int q, int choice)
+{
+    
+    if (choice == 1)
+    {
+        trieDelete(rootname, p[q].getname());
+        string name="";
+        cout << "Enter new name: ";
+        
+        string s;
+        do {
+        getline(cin, s);
+        } while (s.length() != 0);
+        cout << endl;
 
+        while(name.size()==0)
+        {
+            getline(std::cin, name, '\n');
+            if(name.size() == 0){
+                cout<<"Please enter a name!";
+            }     
+        }
+        p[q].setname(name);
+        insertname(p[q].getname(), q);
+    }
+    else if (choice == 2)
+    {
+        trieDelete(rootnum, p[q].getnum());
+        string number;
+        cout << "Enter new number: ";
+        cin >> number;
+        p[q].setnum(number);
+        insertnum(p[q].getnum(), q);
+    }
+    else if (choice == 3)
+    {
+        string email;
+        cout << "Enter new email: ";
+        cin >> email;
+        p[q].setemail(email);
+    }
+    else if (choice == 4)
+    {
+        string prof;
+        cout << "Enter new profession: ";
+        cin >> prof;
+        p[q].setprofession(prof);
+    }
+    else if(choice == 5)
+    {
+        p[q].mkfav();
+    }
+    else if(choice == 6)
+    {
+        p[q].nmkfav();
+    }
+    else
+    {
+        cout << "Invalid choice\n";
+    }
+
+    int x = 1;
+    if (p[q].getemail().size() >= 2)
+        x += 1;
+    if (p[q].getprofession().size() >= 2)
+        x += 2;
+
+    ifstream is("contacts.txt");
+
+    // open file in write mode or out mode
+    ofstream ofs;
+    ofs.open("temp.txt", ofstream::out);
+
+    // loop getting single characters
+
+    char c;
+    int line_no = 1;
+    int flag = 0;
+    while (is.get(c))
+    {
+
+        if (c == '\n')
+            line_no++;
+        if (line_no == (q + 2) && flag == 0)
+        {
+            ofs << "\n"
+                << x << p[q].getname() << "$ " << p[q].getnum() << " " << p[q].getfav() << " " << p[q].getemail() << " " << p[q].getprofession();
+            flag = 1;
+        }
+
+        if (line_no != q + 2)
+            ofs << c;
+    }
+
+    ofs.close();
+    is.close();
+
+    remove("contacts.txt");
+    rename("temp.txt", "contacts.txt");
+}
+
+
+//Things left
+//editing osaam bin ladin
 
 int main()
 {
@@ -616,20 +872,21 @@ int main()
     }    
     
     vector<int> del;
+	options(0);    
 
-
-	options();    
     while (true)
 	{
         int choice;
+        cout<<"Option: ";
 		cin >> choice;
 		switch (choice)
 		{
 			case 1:         //search by name        //done
 			{
-                cout << "\nEnter prefix of name: ";
-                string s;
-                cin >> s;
+                cout << "Enter prefix of name: ";
+                string s="";
+                while(s.length()<1)
+                getline(cin,s,'\n');
                 vector<int> q;
                 if(displayContactsbyname(s,&q))
                 {
@@ -643,6 +900,11 @@ int main()
                     }
                     displaycontact(p[q[x-1]]);
                 }
+                else
+                {
+                    cout << "No name of prefix " << s << endl;
+                }
+                options();
 				break;
 			}
 			case 2:         //search by number      //done
@@ -663,19 +925,82 @@ int main()
                     }
                     displaycontact(p[q[x-1]]);
                 }
+                else
+                {
+                    cout << "No number of prefix " << s << endl;
+                }
+                options();
 				break;
 			}
 			case 3:         //add to contacts       //done    
-			{
-                p.push_back(addContact());
+			{                
+                p.push_back(addContact(n));
                 n++;
 
-                cout << "\n Contact added successfully\n";
+                cout << "\nContact added successfully\n";
+                options();
 				break;
 			}
-			case 4:         //edit contact          
+			case 4:         //edit contact          //done
 			{
+                cout << "\n1. Search contact by name\n";
+                cout << "2. Search contact by number\n";
+                cout << "Choose option number: ";
+                int x;
+                cin >> x;
+                while(!(x==1 || x==2))
+                {
+                    cout << "Enter a valid number: ";
+                    cin >> x;
+                }
+                string s;
+                if(x==1)
+                {
+                    cout << "Enter prefix of name: ";
+                }
+                else
+                {
+                    cout << "Enter prefix of number: ";
+                }
+                cin >> s;
+                vector<int> t;
+                int y=0;
+                if(x==1)
+                {
+                    y=displayContactsbyname(s,&t);
+                }
+                else
+                    y=displayContactsbynum(s,&t);
 
+                if(y==0)
+                {
+                    cout << "No contact of prefix " << s << endl;
+                    options();
+                    break;
+                }
+                cout << "Select the contact you want to Edit ";
+                cout<<"\n--Press 0 to cancel--\n";
+                cin >> x;
+                if(!x){          
+                    options();
+                    break;
+                }
+                while(x>t.size())
+                {
+                    cout << "Enter a valid number: ";
+                    cin >> x;
+                }
+                int a = t[x - 1];
+                cout << "What do you want to edit?\n";
+                cout << "1.Name\n";
+                cout << "2.Phone Number\n";
+                cout << "3.Email\n";
+                cout << "4.Profession\n";
+                cout << "Enter your choice: ";
+                int choice;
+                cin >> choice;
+                Editcontact(p, a, choice);
+                options();
 				break;
 			}
 			case 5:         //delete contact        //done
@@ -701,15 +1026,25 @@ int main()
                 }
                 cin >> s;
                 vector<int> t;
+                int y=0;
                 if(x==1)
                 {
-                    displayContactsbyname(s,&t);
+                    y=displayContactsbyname(s,&t);
                 }
                 else
-                    displayContactsbynum(s,&t);
+                    y=displayContactsbynum(s,&t);
 
-                cout << "Select the contact you want to delete " << endl;
+                if(y==0)
+                {
+                    cout << "No contact of prefix " << s << endl;
+                }
+                cout << "Select the contact you want to delete ";
+                cout << "\n--Enter 0 to cancel--\n";
                 cin >> x;
+                if(!x){          
+                    options();
+                    break;
+                }
                 while(x>t.size())
                 {
                     cout << "Enter a valid number: ";
@@ -719,6 +1054,7 @@ int main()
                 trieDelete(rootname, p[t[x-1]].getname());
                 del.push_back(t[x-1]);
                 n--;
+                options();
 				break;
 			}
 			case 6:         //show favourites       //done
@@ -728,13 +1064,18 @@ int main()
                 showfav(p,fav,&f,del);
 				if(f.size()==0)
                 {
-                    cout << "No favourite Contacts to show\n";
+                    cout << "No favourite Contacts\n";
                 }
                 else
                 {
                     cout << "Select favourite contact number: ";
                     int x;
+                    cout << "\n--Enter 0 to cancel--\n";
                     cin >> x;
+                    if(!x){          
+                        options();
+                        break;
+                    }
                     while(x>f.size())
                     {
                         cout << "\nEnter a valid number: ";
@@ -743,11 +1084,12 @@ int main()
                     cout << endl;
                     displaycontact(p[f[x-1]]);
                 }
+                options();
 				break;
 			}
-			case 7:         //add to favourites     //edit in file
+			case 7:         //add to favourites     //done
 			{
-                cout << "\nEnter name prefix: ";
+                cout << "\nEnter prefix contact name: ";
                 string s;
                 cin >> s;
                 vector<int> q;
@@ -755,59 +1097,87 @@ int main()
                 {
                     cout << "\nEnter number of contact: ";
                     int x;
+                    cout << "\n--Enter 0 to cancel--\n";
                     cin >> x;
+                    if(!x){          
+                        options();
+                        break;
+                    }
                     while(x>q.size())
                     {
                         cout << "\nEnter a Valid number: ";
                         cin >> x;
                     }
-                    p[q[x-1]].mkfav();
+
+                    if (find(fav.begin(), fav.end(), q[x - 1]) != fav.end())
+                    {
+                        cout << "Contact already in favourites\n";
+                        options();
+                        break;
+                    }
+
+                    Editcontact(p,q[x-1],5);
+
                     fav.push_back(q[x-1]);
                     m++;
                     cout << endl << p[q[x-1]].getname() << " contact added to favourites \n";
+                    // cout << "bool check: " << p[q[x-1]].getfav() << endl;
                 }
                 else
                 {
                     cout << "\nNo contacts with prefix " << s << endl;
                 }
-                
+                options();
                 //edit contact in file
                 break;
 			}
-			case 8:         //delete from favourites // edit in file
+			case 8:         //delete from favourites //done
 			{
+                if(!fav.size())
+                {
+                    cout << "No favourites\n";
+                    options();
+                    break;
+                }
                 vector<int> t;
                 showfav(p,fav,&t,del);
-                cout << "\n Enter number of contact to be removed from favourite: ";
-                int x;
-                cin >> x;
-                while(x>t.size());
+                cout << "\nEnter number of contact to be removed from favourite: ";
+                int y;
+                cout << "\n--Enter 0 to cancel--\n";
+                cin >> y;
+                if(!y){          
+                    options();
+                    break;
+                }
+                // cout << "here : " << y << " b : " << t.size() <<  endl;
+                while(y>t.size())
                 {
                     cout << "\nEnter a valid number: ";
-                    cin >> x;
+                    cin >> y;
                 }
-
-                cout << endl << p[t[x-1]].getname() << " contact removed from favourites "; 
+                Editcontact(p,t[y-1],6);
+                cout << endl << p[t[y-1]].getname() << " contact removed from favourites "; 
                 m--;
                 for(int i=0;i<fav.size();i++)
                 {
-                    if(fav[i]==t[x-1])
+                    if(fav[i]==t[y-1])
                     {
                         fav[i]=-1;
                         break;
                     }
                 }
-
+                options();
 				break;
 			}
             case 9:         //display all contacts  //done
             {
                 dispall(p);
+                options();
                 break;
             }
             case 10:        //exit                  //done
             {
-                delcontact(del);
+                delcontact(del,n,m);
                 cout << "Exiting\n";
 				exit(0);
 				break;
