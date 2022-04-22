@@ -596,9 +596,9 @@ void dispall(vector<contactinfo> p)
     }
 }
 
-void Editcontact(vector<contactinfo>* r, int q, int choice)
+void Editcontact(vector<contactinfo> &p, int q, int choice)
 {
-    vector<contactinfo> p=*r;
+    
     if (choice == 1)
     {
         trieDelete(rootname, p[q].getname());
@@ -871,6 +871,7 @@ int main()
                     cin >> x;
                 }
                 int a = t[x - 1];
+                cout << "What do you want to edit?\n"
                 cout << "1.Name\n";
                 cout << "2.Phone Number\n";
                 cout << "3.Email\n";
@@ -878,7 +879,7 @@ int main()
                 cout << "Enter your choice: ";
                 int choice;
                 cin >> choice;
-                Editcontact(&p, a, choice);
+                Editcontact(p, a, choice);
                 options();
 				break;
 			}
@@ -979,7 +980,7 @@ int main()
                         break;
                     }
 
-                    Editcontact(&p,q[x-1],5);
+                    Editcontact(p,q[x-1],5);
 
                     fav.push_back(q[x-1]);
                     m++;
@@ -1012,7 +1013,7 @@ int main()
                     cout << "\nEnter a valid number: ";
                     cin >> x;
                 }
-                Editcontact(&p,t[x-1],6);
+                Editcontact(p,t[x-1],6);
                 cout << endl << p[t[x-1]].getname() << " contact removed from favourites "; 
                 m--;
                 for(int i=0;i<fav.size();i++)
