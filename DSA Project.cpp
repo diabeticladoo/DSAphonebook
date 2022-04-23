@@ -142,12 +142,10 @@ bool checkname(string s)
             {
                 return 1;
             }
-            // itr->isLast = true;
-            // itr->pos = j;
             return 0;
         }
     }
-
+    return 0;
 }
 
 bool checknum(string s)
@@ -173,7 +171,7 @@ bool checknum(string s)
             return 0;
         }
     }
-
+    return 0;
 }
 
 void insertname(string s, int j)
@@ -529,7 +527,7 @@ contactinfo addContact(int n)
         bool d=checknum(number);
         if(c && d)
         {
-            cout << "Same name and number already exists, enter valid details: ";
+            cout << "Same name and number already exists, enter valid details: \n";
         }
         else if(c)
         {
@@ -722,13 +720,7 @@ void Editcontact(vector<contactinfo> &p, int q, int choice)
         do {
             getline(cin, s);
         } while (s.length() != 0);
-        cout << endl;
-
-        if(checkname(s)){
-            cout<<"Name already exists in the directory!\n";
-            return;
-        }
-
+        
         while(name.size()==0)
         {
             getline(std::cin, name, '\n');
@@ -736,15 +728,52 @@ void Editcontact(vector<contactinfo> &p, int q, int choice)
                 cout<<"Please enter a name!";
             }     
         }
+
+        if(checkname(name))
+        {
+            cout <<"Name already exists in the directory!\n";
+            return;
+        }
+        else
+        {
+            cout << "Name edited successfully\n";
+        }
+
         p[q].setname(name);
         insertname(p[q].getname(), q);
     }
     else if (choice == 2)
     {
         trieDelete(rootnum, p[q].getnum());
-        string number;
-        cout << "Enter new number: ";
-        cin >> number;  
+        string number="";
+        // cout << "Enter new number: ";
+
+        string s;
+        do {
+            getline(cin, s);
+        } while (s.length() != 0);
+        
+        while(number.size() != 10)
+        {
+            cout<<"Enter new number: ";
+            getline(std::cin, number, '\n');
+            if(number.size() != 10)
+            {
+                cout<<"Enter a valid 10 digit number!\n";
+            }
+        }
+
+        if(checknum(number))
+        {
+            cout <<"Number already exists in the directory!\n";
+            return;
+        }
+        else
+        {
+            cout << "Number edited successfully\n";
+        }
+
+
         p[q].setnum(number);
         insertnum(p[q].getnum(), q);
     }
@@ -812,11 +841,41 @@ void Editcontact(vector<contactinfo> &p, int q, int choice)
     rename("temp.txt", "contacts.txt");
 }
 
+void copy(int x)
+{
+    string line;
+    string inputfile="contacts.txt";
+    string outputfile="contacts_backup.txt";
+    
+    if(!x)
+    {
+        swap(inputfile,outputfile);
+    }
+ 
+    ifstream file1 (inputfile);
+    ofstream file2 (outputfile);
+
+    if(file1 && file2){
+ 
+        while(getline(file1,line)){
+            file2 << line << "\n";
+        }
+    }
+ 
+    file1.close();
+    file2.close();
+
+}
+
 int main()
 {
 	fstream  file;
+
+    copy(0);
+
     file.open("contacts.txt", ios::out | ios::in );
-  
+    
+
 	int x, n,m;
 	file >> n;
     file >> m;
@@ -824,8 +883,8 @@ int main()
 	vector<contactinfo> p(n);
     vector<int> fav(m);
 	string a, b, c, d;
-    bool f;
     int favcount=0;
+    bool f;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -1196,6 +1255,7 @@ int main()
             {
                 delcontact(del,n,m);
                 cout << "Exiting\n";
+                copy(1);
 				exit(0);
 				break;
             }
@@ -1209,5 +1269,7 @@ int main()
         }
 	}
 
-	return 0;
+	
+    
+    return 0;
 }
