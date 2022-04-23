@@ -724,6 +724,11 @@ void Editcontact(vector<contactinfo> &p, int q, int choice)
         } while (s.length() != 0);
         cout << endl;
 
+        if(checkname(s)){
+            cout<<"Name already exists in the directory!\n";
+            return;
+        }
+
         while(name.size()==0)
         {
             getline(std::cin, name, '\n');
@@ -739,7 +744,7 @@ void Editcontact(vector<contactinfo> &p, int q, int choice)
         trieDelete(rootnum, p[q].getnum());
         string number;
         cout << "Enter new number: ";
-        cin >> number;
+        cin >> number;  
         p[q].setnum(number);
         insertnum(p[q].getnum(), q);
     }
